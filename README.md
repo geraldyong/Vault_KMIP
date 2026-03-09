@@ -18,7 +18,7 @@ To run this demo you must supply your own Vault Enterprise license file.
 
 The license file must be placed at:
 
-./vault/vault.hclic
+`./vault/vault.hclic`
 
 This file is NOT included in this repository and must be provided
 separately by the user.
@@ -51,35 +51,40 @@ You must have:
 
 1.  Place your Vault Enterprise license file:
 
-vault/vault.hclic
+`vault/vault.hclic`
 
 2.  Start the stack:
 
-docker compose up --build
+`docker compose up --build`
 
 To reset everything:
 
-docker compose down -v docker compose up --build
+```
+docker compose down -v 
+docker compose up --build -d
+```
 
 ------------------------------------------------------------------------
 
 ## Services
 
-Frontend UI: http://localhost:5173\
-Backend API: http://localhost:8000\
-Vault API: http://localhost:8200\
-Vault KMIP listener: localhost:5696
+Frontend UI: `http://localhost:5173\`
+Backend API: `http://localhost:8000\`
+Vault API: `http://localhost:8200\`
+Vault KMIP listener: `localhost:5696`
 
 ------------------------------------------------------------------------
 
 ## Backend API
 
-GET /api/health\
-GET /api/state\
-POST /api/groups/create\
-POST /api/groups/{group_name}/delete\
-POST /api/groups/{group_name}/rekey\
-GET /api/vault-browser
+API Swagger can be found in `http://localhost:8000/docs`
+
+- `GET /api/health\`
+- `GET /api/state\`
+- `POST /api/groups/create\`
+- `POST /api/groups/{group_name}/delete\`
+- `POST /api/groups/{group_name}/rekey\`
+- `GET /api/vault-browser`
 
 ------------------------------------------------------------------------
 
