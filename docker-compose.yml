@@ -1,0 +1,99 @@
+services:
+  vault-perms:
+    image: alpine:3.21
+    container_name: vault-kmip-perms
+    user: "0:0"
+    command: >
+      sh -c "
+        mkdir -p /vault/data /vault/logs /shared &&
+        chown -R 100:100 /vault/data /vault/logs /shared &&
+        chmod -R 770 /vault/data /vault/logs /shared
+      "
+    volumes:
+      - vault-data:/vault/data
+      - vault-logs:/vault/logs
+      - backend-runtime:/shared
+
+  vault:
+    image: hashicorp/vault-enterprise:1.21.4-ent
+    container_name: vault-kmip
+    depends_on:
+      vault-perms:
+        condition: service_completed_successfully
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_LICENSE_PATH: /vault/license/vault.hclic
+      VAULT_API_ADDR: http://vault:8200
+    volumes:
+      - ./vault/config.hcl:/vault/config/config.hcl:ro
+      - ./vault/vault.hclic:/vault/license/vault.hclic:ro
+      - vault-data:/vault/data
+      - vault-logs:/vault/logs
+    command: vault server -config=/vault/config/config.hcl
+    ports:
+      - "8200:8200"
+      - "5696:5696"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- 'http://127.0.0.1:8200/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204' >/dev/null 2>&1 || exit 1"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+
+  vault-bootstrap:
+    image: hashicorp/vault-enterprise:1.21.4-ent
+    container_name: vault-kmip-bootstrap
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_KMIP_MOUNT: kmip
+      VAULT_KMIP_LISTEN_ADDR: 0.0.0.0:5696
+      VAULT_KMIP_SCOPE: demo-scope
+      VAULT_KMIP_ROLE: demo-admin
+    entrypoint: ["/bin/sh", "/vault/bootstrap.sh"]
+    volumes:
+      - ./vault/bootstrap.sh:/vault/bootstrap.sh:ro
+      - backend-runtime:/shared
+
+  backend:
+    build:
+      context: ./backend
+    container_name: kmip-client-backend
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN_FILE: /app/runtime/root-token
+      VAULT_KMIP_MOUNT: kmip
+      VAULT_KMIP_HOST: vault
+      VAULT_KMIP_PORT: 5696
+      VAULT_KMIP_SCOPE: demo-scope
+      VAULT_KMIP_ROLE: demo-admin
+      KMIP_RUNTIME_DIR: /app/runtime
+    volumes:
+      - backend-runtime:/app/runtime
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: kmip-client-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_BASE: http://localhost:8000
+    ports:
+      - "5173:5173"
+
+volumes:
+  vault-data:
+  vault-logs:
+  backend-runtime:

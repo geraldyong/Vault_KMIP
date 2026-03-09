@@ -1,0 +1,56 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Backend runtime / generated files
+backend/runtime/
+*.log
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build artifacts
+dist/
+build/
+
+# Docker
+*.pid
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Vault Enterprise license and generated vault files
+vault/*.hclic
+vault/*.token
+vault/*.json
+vault/*.pem
+vault/*.crt
+vault/*.key
+
+# Optional local compose overrides
+docker-compose.override.yml
