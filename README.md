@@ -68,10 +68,10 @@ docker compose up --build -d
 
 ## Services
 
-Frontend UI: `http://localhost:5173\`
-Backend API: `http://localhost:8000\`
-Vault API: `http://localhost:8200\`
-Vault KMIP listener: `localhost:5696`
+- Frontend UI: `http://localhost:5173\`
+- Backend API: `http://localhost:8000\`
+- Vault API: `http://localhost:8200\`
+- Vault KMIP listener: `localhost:5696`
 
 ------------------------------------------------------------------------
 
