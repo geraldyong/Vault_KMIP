@@ -5,6 +5,8 @@ connect to a HashiCorp Vault KMIP server, create and manage grouped
 encryption keys, and visualise both local application state and
 Vault-side KMIP objects.
 
+![Vault Demo Screenshot](Vault_KMIP_Screenshot.png)
+
 This project is intended as an educational reference and demonstration
 tool for learning how KMIP interacts with Vault Enterprise.
 
